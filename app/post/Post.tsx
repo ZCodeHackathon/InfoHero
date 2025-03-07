@@ -9,6 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import { Input } from "@/components/ui/input";
 
 type Comment = {
   id: string;
@@ -99,7 +100,7 @@ const PostItem: FC<PostItemProps> = ({
   return (
     <div
       key={id}
-      className={`p-4 mt-2 rounded-md shadow-lg border  ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
+      className={`p-2 rounded-md shadow-lg border  ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
     >
       <div className="flex items-center">
         <Avatar src={user_avatar} sx={{ bgcolor: red[500], marginRight: 2 }}>
@@ -129,7 +130,7 @@ const PostItem: FC<PostItemProps> = ({
         </div>
       )}
 
-      <p className="text-gray-700 mt-2">{content}</p>
+      <p className="mt-2 truncate">{content}</p>
 
       <div className="flex flex-row justify-between items-center mt-2">
         <p>{likes} Likes</p>
@@ -141,13 +142,15 @@ const PostItem: FC<PostItemProps> = ({
           style={{ color: hasLiked ? "red" : "grey", fontSize: 32 }}
           onClick={handleLikeClick}
         />
-        <input
+
+        <Input
           type="text"
           placeholder="Write a comment..."
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
-          className="px-4 py-2 border rounded-md ml-4"
+          className="flex-1 px-4 py-2 border rounded-md ml-4"
         />
+
         <AddCommentIcon
           style={{ color: "grey", fontSize: 32 }}
           onClick={handleCommentSubmit}

@@ -245,35 +245,34 @@ export default function Home() {
   };
 
   return (
-    <div
-      className="flex flex-col gap-2 p-4 items-center "
-      suppressHydrationWarning={true}
-    >
-      <div className="max-w-5xl flex flex-wrap items-center justify-center gap-4">
+    <div className="flex flex-col items-center" suppressHydrationWarning={true}>
+      <div className="max-w-5xl flex flex-wrap items-center justify-center">
         {posts.map((post) => (
-          <PostItem
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            user_name={post.user_name}
-            user_avatar={post.user_avatar}
-            image_url={post.image_url}
-            content={post.content}
-            hashtags={post.hashtags}
-            likes={post.likes}
-            comments={post.comments}
-            badges={post.badges}
-            userHasLiked={userLikes.includes(post.id)}
-            onToggleLike={() => handleToggleLike(post.id)}
-            onComment={(commentContent) =>
-              handleComment(post.id, commentContent)
-            }
-            onDeleteComment={(commentId) =>
-              handleDeleteComment(commentId, post.id)
-            }
-            currentUser={user}
-            router={router}
-          />
+          <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2">
+            <PostItem
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              user_name={post.user_name}
+              user_avatar={post.user_avatar}
+              image_url={post.image_url}
+              content={post.content}
+              hashtags={post.hashtags}
+              likes={post.likes}
+              comments={post.comments}
+              badges={post.badges}
+              userHasLiked={userLikes.includes(post.id)}
+              onToggleLike={() => handleToggleLike(post.id)}
+              onComment={(commentContent) =>
+                handleComment(post.id, commentContent)
+              }
+              onDeleteComment={(commentId) =>
+                handleDeleteComment(commentId, post.id)
+              }
+              currentUser={user}
+              router={router}
+            />
+          </div>
         ))}
       </div>
     </div>
