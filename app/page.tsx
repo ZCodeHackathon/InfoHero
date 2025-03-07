@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect, useCallback } from "react";
@@ -17,7 +17,7 @@ type Comment = {
 type Badge = {
   id: string;
   name: string;
-}
+};
 type Post = {
   id: string;
   user_id: string;
@@ -41,26 +41,29 @@ export default function Home() {
   const router = useRouter();
 
   const fetchPosts = useCallback(async () => {
-    try{
-      const { data, error } = await supabase.from("Post").select("*").order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("Post")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) {
         console.error("Error fetching posts:", error);
         return;
       }
       const postIds = data.map((post: Post) => post.id);
       const { data: comments, error: commentsError } = await supabase
-            .from("Comments")
-            .select("*")
-            .in("post_id", postIds);
+        .from("Comments")
+        .select("*")
+        .in("post_id", postIds);
 
       if (commentsError) {
-          console.error("Error fetching comments:", commentsError);
-          return;
+        console.error("Error fetching comments:", commentsError);
+        return;
       }
       const { data: postBadges, error: postBadgesError } = await supabase
-          .from("post_badges")
-          .select("*")
-          .in("post_id", postIds);
+        .from("post_badges")
+        .select("*")
+        .in("post_id", postIds);
 
       if (postBadgesError) {
         console.error("Error fetching post_badges:", postBadgesError);
@@ -69,9 +72,9 @@ export default function Home() {
       const badgeIds = postBadges.map((postBadge) => postBadge.badge_id);
 
       const { data: badges, error: badgesError } = await supabase
-          .from("badges")
-          .select("*")
-          .in("id", badgeIds);
+        .from("badges")
+        .select("*")
+        .in("id", badgeIds);
       if (badgesError) {
         console.error("Error fetching badges:", badgesError);
         return;
@@ -80,19 +83,20 @@ export default function Home() {
 
       const postsWithCommentsAndBadges = data.map((post: Post) => ({
         ...post,
-        comments: comments.filter((comment: Comment) => comment.post_id === post.id),
+        comments: comments.filter(
+          (comment: Comment) => comment.post_id === post.id
+        ),
         badges: postBadges
-            .filter((pb) => pb.post_id === post.id)
-            .map((pb) => badgeMap.get(pb.badge_id)),
+          .filter((pb) => pb.post_id === post.id)
+          .map((pb) => badgeMap.get(pb.badge_id)),
       }));
-      console.log(postsWithCommentsAndBadges)
+      console.log(postsWithCommentsAndBadges);
       setPosts(postsWithCommentsAndBadges);
 
-  console.log(badges);
-    } catch(error){
+      console.log(badges);
+    } catch (error) {
       console.error("Error fetching data:", error);
     }
-
   }, [supabase]);
 
   const fetchUser = useCallback(async () => {
@@ -241,34 +245,34 @@ export default function Home() {
   };
 
   return (
-    <div
-    
-    
-      className="flex flex-col gap-2 p-4 items-center "
-      suppressHydrationWarning={true}
-    >
-      
-      <div className="md:w-7/12 max-w-5xl">
+    <div className="flex flex-col items-center" suppressHydrationWarning={true}>
+      <div className="max-w-5xl flex flex-wrap items-center justify-center">
         {posts.map((post) => (
-          <PostItem
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            user_name={post.user_name}
-            user_avatar={post.user_avatar}
-            image_url={post.image_url}
-            content={post.content}
-            hashtags={post.hashtags}
-            likes={post.likes}
-            comments={post.comments}
-            badges={post.badges}
-            userHasLiked={userLikes.includes(post.id)}
-            onToggleLike={() => handleToggleLike(post.id)}
-            onComment={(commentContent) => handleComment(post.id, commentContent)}
-            onDeleteComment={(commentId) => handleDeleteComment(commentId, post.id)}
-            currentUser={user}
-            router={router}
-          />
+          <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2">
+            <PostItem
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              user_name={post.user_name}
+              user_avatar={post.user_avatar}
+              image_url={post.image_url}
+              content={post.content}
+              hashtags={post.hashtags}
+              likes={post.likes}
+              comments={post.comments}
+              badges={post.badges}
+              userHasLiked={userLikes.includes(post.id)}
+              onToggleLike={() => handleToggleLike(post.id)}
+              onComment={(commentContent) =>
+                handleComment(post.id, commentContent)
+              }
+              onDeleteComment={(commentId) =>
+                handleDeleteComment(commentId, post.id)
+              }
+              currentUser={user}
+              router={router}
+            />
+          </div>
         ))}
       </div>
     </div>
