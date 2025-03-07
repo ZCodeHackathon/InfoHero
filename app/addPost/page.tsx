@@ -62,7 +62,7 @@ export default function AddPost() {
       return;
     }
 
-    if (!title || !content || !imageUrl || !selectedBadges) {
+    if (!title || !content || !selectedBadges) {
       alert("All fields are required!");
       return;
     }
@@ -147,7 +147,7 @@ export default function AddPost() {
             id="imageUrl"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            required
+            
             className="w-full mt-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md"
           />
         </div>
