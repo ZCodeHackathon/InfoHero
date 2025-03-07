@@ -249,7 +249,7 @@ export default function Home() {
       className="flex flex-col gap-2 p-4 items-center "
       suppressHydrationWarning={true}
     >
-      <div className="md:w-7/12 max-w-5xl">
+      <div className="max-w-5xl flex flex-wrap items-center justify-center gap-4">
         {posts.map((post) => (
           <PostItem
             key={post.id}
