@@ -9,6 +9,7 @@ type Profile = {
   id: string;
   username: string;
   created_at: string;
+  avatar_url: string; // Dodanie avatar_url
 };
 
 type Comment = {
@@ -44,10 +45,10 @@ type Post = {
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]); // Załadowanie postów użytkownika
-  const [comments, setComments] = useState<Comment[]>([]); // Załadowanie komentarzy użytkownika
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"posts" | "comments">("posts"); // State do przełączania między postami i komentarzami
+  const [activeTab, setActiveTab] = useState<"posts" | "comments">("posts");
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const [userUnlikes, setUserUnlikes] = useState<string[]>([]);
   const { id } = useParams(); // Pobieranie UUID użytkownika z URL
@@ -58,7 +59,7 @@ export default function ProfilePage() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, username, created_at")
+        .select("id, username, created_at, avatar_url") // Dodaj avatar_url
         .eq("id", id) // Użycie UUID do załadowania profilu
         .single();
 
@@ -304,29 +305,31 @@ export default function ProfilePage() {
     if (id) {
       fetchProfile();
       fetchUserPosts();
-      fetchUserComments(); // Fetch user comments
+      fetchUserLikes();
+      fetchUserUnlikes();
+      fetchUserComments();
     }
-  }, [id, fetchProfile, fetchUserPosts, fetchUserComments]);
-
-  useEffect(() => {
-    fetchUserLikes();
-    fetchUserUnlikes();
-  }, [fetchUserLikes, fetchUserUnlikes]);
+  }, [id, fetchProfile, fetchUserPosts, fetchUserLikes, fetchUserUnlikes, fetchUserComments]);
 
   if (loading) {
     return <div>Loading...</div>;
-  }
-
-  if (!profile) {
-    return <div>Nie znaleziono użytkownika.</div>;
   }
 
   return (
     <div className="flex flex-col items-center p-4">
       <div className="w-full md:w-7/12 max-w-5xl">
         <div className="flex flex-col items-center">
-          <h1 className="text-2xl font-semibold">{profile.username}</h1>
-          <p>Dołączył: {new Date(profile.created_at).toLocaleDateString()}</p>
+          {/* Avatar użytkownika */}
+          {profile?.avatar_url && (
+            <Avatar
+              src={profile.avatar_url}
+              alt={profile.username}
+              sx={{ width: 100, height: 100 }}
+            />
+          )}
+          {/* Nazwa użytkownika */}
+          <h1 className="text-2xl font-semibold mt-4">{profile?.username}</h1>
+          <p>Dołączył: {new Date(profile?.created_at).toLocaleDateString()}</p>
         </div>
 
         {/* Navbar z przełączaniem między postami a komentarzami */}
