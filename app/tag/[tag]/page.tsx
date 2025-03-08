@@ -3,8 +3,8 @@
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import PostItem from "../../post/Post"; // Import komponentu PostItem
 import { Comment, Post } from "@/components/types";
+import PostItem from "@/app/post/Post";
 
 export default function Tag() {
   const [posts, setPosts] = useState<Post[]>([]);

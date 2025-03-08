@@ -11,7 +11,7 @@ export default function PostsDynamic() {
   const [post, setPost] = useState<Post | null>(null);
   const [user, setUser] = useState<any>(null);
   const [userLikes, setUserLikes] = useState<string[]>([]);
-  const [userUnlikes, setUserUnlikes] = useState<string[]>([]); // Dodaj stan dla unlikes
+  const [userUnlikes, setUserUnlikes] = useState<string[]>([]);
   const router = useRouter();
 
   const fetchPost = useCallback(async () => {
@@ -21,6 +21,7 @@ export default function PostsDynamic() {
         .select("*")
         .eq("id", params.id)
         .single();
+
       if (error) {
         console.error("Error fetching post:", error);
         return;
@@ -56,6 +57,16 @@ export default function PostsDynamic() {
         return;
       }
 
+      const { data: commentsLikes, error: commentsLikesError } = await supabase
+        .from("LikesComments")
+        .select("*")
+        .eq("comment_id", data.id);
+
+      if (commentsLikesError) {
+        console.error("Error fetching comment likes:", commentsLikesError);
+        return;
+      }
+
       const { data: postBadges, error: postBadgesError } = await supabase
         .from("post_badges")
         .select("*")
@@ -80,8 +91,6 @@ export default function PostsDynamic() {
 
       const postWithCommentsAndBadges = {
         ...data,
-        likes: likes.length, // Pobierz liczbę like'ów
-        unlikes: unlikes.length, // Pobierz liczbę unlikes
         comments: comments,
         badges: postBadges.map((pb) => badgeMap.get(pb.badge_id)),
       };
