@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bd758030-cd65-49fe-a8f0-64003038fd49" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/addPost/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/addPost/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,6 +38,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\janma\\WebstormProjects\\info_hero\\InfoHero\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -48,7 +51,9 @@
       <option name="presentableId" value="Default" />
       <updated>1741376593063</updated>
       <workItem from="1741376594078" duration="938000" />
-      <workItem from="1741392028940" duration="554000" />
+      <workItem from="1741392028940" duration="1448000" />
+      <workItem from="1741393497799" duration="1259000" />
+      <workItem from="1741394777449" duration="5622000" />
     </task>
     <servers />
   </component>
