@@ -89,7 +89,7 @@ export default function AddPost() {
 
                 if (data.predicted_class) {
                     //       alert("This post contains hate speech!");
-                    setAlert({open: true, severity: 'error', message: 'This post contains hate speech!'});
+                    setAlert({open: true, severity: 'error', message: 'Ten post zawiera mowę nienawiści!'});
 
                     setIsVerified(false);
                     return;
@@ -265,11 +265,7 @@ export default function AddPost() {
                     </button>
                 </div>
             </form>
-            <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
-                <Alert onClose={handleAlertClose} severity={alert.severity} sx={{width: '100%'}}>
-                    {alert.message}
-                </Alert>
-            </Snackbar>
+
         </div>
     );
 }
