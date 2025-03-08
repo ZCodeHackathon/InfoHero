@@ -470,48 +470,76 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center" suppressHydrationWarning={true}>
-      <div className="max-w-5xl flex flex-wrap items-top justify-center">
-        {posts.map((post) => (
-          <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>
-            <PostItem
-              key={post.id}
-              id={post.id}
-              title={post.title}
-              user_id={post.user_id}
-              user_name={post.user_name}
-              user_avatar={post.user_avatar}
-              image_url={post.image_url}
-              content={post.content}
-              fake_detection={post.fake_detection}
-              source={post.source}
-              hashtags={post.hashtags}
-              unlikes={post.unlikes}
-              likes={post.likes}
-              comments={post.comments}
-              badges={post.badges}
-              userHasLiked={userLikes.includes(post.id)}
-              userHasUnliked={userUnlikes.includes(post.id)}
-              onToggleLike={() => handleToggleLike(post.id)}
-              onToggleUnlike={() => handleToggleUnlike(post.id)}
-              onToggleCommentLike={(commentId) =>
-                handleToggleCommentLike(commentId)
-              }
-              onToggleCommentUnlike={(commentId) =>
-                handleToggleCommentUnlike(commentId)
-              }
-              onComment={(commentContent) =>
-                handleComment(post.id, commentContent)
-              }
-              onDeleteComment={(commentId) =>
-                handleDeleteComment(commentId, post.id)
-              }
-              currentUser={user}
-              router={router}
-            />
+    <div
+      className="flex flex-col items-center w-full"
+      suppressHydrationWarning={true}
+    >
+      <div className="relative w-full">
+        {/* Main content with sidebars layout */}
+        <div className="flex justify-center items-start">
+          {/* Left Ad Banner */}
+          <div className="hidden xl:block w-[400px] h-[850px] sticky top-4">
+            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+              <span className="text-gray-500">Ad Space</span>
+            </div>
           </div>
-        ))}
+
+          {/* Main Posts Content */}
+          <div className="max-w-5xl flex flex-wrap items-top justify-center">
+            {posts.map((post) => (
+              <div
+                className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2"
+                key={post.id}
+              >
+                <PostItem
+                  key={post.id}
+                  id={post.id}
+                  title={post.title}
+                  user_id={post.user_id}
+                  user_name={post.user_name}
+                  user_avatar={post.user_avatar}
+                  image_url={post.image_url}
+                  content={post.content}
+                  fake_detection={post.fake_detection}
+                  source={post.source}
+                  hashtags={post.hashtags}
+                  unlikes={post.unlikes}
+                  likes={post.likes}
+                  comments={post.comments}
+                  badges={post.badges}
+                  userHasLiked={userLikes.includes(post.id)}
+                  userHasUnliked={userUnlikes.includes(post.id)}
+                  onToggleLike={() => handleToggleLike(post.id)}
+                  onToggleUnlike={() => handleToggleUnlike(post.id)}
+                  onToggleCommentLike={(commentId) =>
+                    handleToggleCommentLike(commentId)
+                  }
+                  onToggleCommentUnlike={(commentId) =>
+                    handleToggleCommentUnlike(commentId)
+                  }
+                  onComment={(commentContent) =>
+                    handleComment(post.id, commentContent)
+                  }
+                  onDeleteComment={(commentId) =>
+                    handleDeleteComment(commentId, post.id)
+                  }
+                  currentUser={user}
+                  router={router}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Right Ad Banner */}
+          <div className="hidden xl:block w-[400px] h-[850px] sticky top-4">
+            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+              <span className="text-gray-500">Ad Space</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Keep the Snackbar outside the layout */}
       <Snackbar
         open={alert.open}
         autoHideDuration={6000}
