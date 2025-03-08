@@ -304,7 +304,7 @@ const PostItem: FC<PostItemProps> = ({
           theme === "dark" ? "bg-black text-white" : "bg-white text-black"
         } ${
           source === null && fake_detection === true
-            ? "border-red-500 border-2 bg-red-100"
+            ? "border-red-500 border-2 bg-red-200"
             : "border-gray-200"
         }`}
       >

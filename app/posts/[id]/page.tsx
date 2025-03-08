@@ -308,6 +308,7 @@ export default function PostsDynamic() {
           id={post.id}
           title={post.title}
           user_name={post.user_name}
+          user_id={post.user_id}
           user_avatar={post.user_avatar}
           image_url={post.image_url}
           content={post.content}
@@ -316,6 +317,8 @@ export default function PostsDynamic() {
           unlikes={post.unlikes} // Przekaż pole unlikes
           comments={post.comments}
           badges={post.badges}
+          source={post.source}
+          fake_detection={post.fake_detection}
           userHasLiked={userLikes.includes(post.id)}
           userHasUnliked={userUnlikes.includes(post.id)} // Przekaż stan unlikes
           onToggleLike={() => handleToggleLike(post.id)}

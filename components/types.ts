@@ -12,6 +12,8 @@ export type Post = {
   comments: Comment[];
   badges: Badge[];
   created_at: string;
+  fake_detection: boolean;
+  source: string;
 };
 
 export type Comment = {
