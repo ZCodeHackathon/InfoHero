@@ -492,38 +492,28 @@ export default function Home() {
       suppressHydrationWarning={true}
     >
       {/* Main Posts Content */}
-    {/* Render badges at the top */}
-    <div className="flex flex-wrap gap-2">
-      {badges.map((badge) => (
-        <Badge
-          key={badge.id}
-          className="cursor-pointer text-sm px-8 rounded-2xl transition-all duration-300 ease-in-out border-2 shadow-lg text-white"
-          style={{ backgroundColor: badge.color }} // Dynamicznie przypisujemy kolor
-          onClick={() => router.push(`/tag/${badge.name}`)} // Navigate on click
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "white"; // Change background to white on hover
-            e.currentTarget.style.color = "black"; // Change text color to black on hover
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = badge.color; // Reset to original color when hover ends
-            e.currentTarget.style.color = "white"; // Reset text color to white when hover ends
-          }}
-        >
-          {badge.name}
-        </Badge>
-      ))}
-    </div>
-  
-  
-
-
-
-
-
-
-
-
-      <div className="flex flex-wrap items-top justify-center w-full">
+      {/* Render badges at the top */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {badges.map((badge) => (
+          <Badge
+            key={badge.id}
+            className="cursor-pointer text-sm px-8 rounded-2xl transition-all duration-300 ease-in-out border-2 shadow-lg text-white"
+            style={{ backgroundColor: badge.color }} // Dynamicznie przypisujemy kolor
+            onClick={() => router.push(`/tag/${badge.name}`)} // Navigate on click
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "white"; // Change background to white on hover
+              e.currentTarget.style.color = "black"; // Change text color to black on hover
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = badge.color; // Reset to original color when hover ends
+              e.currentTarget.style.color = "white"; // Reset text color to white when hover ends
+            }}
+          >
+            {badge.name}
+          </Badge>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-top justify-center w-full mt-2">
         {posts.map((post) => (
           <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>
             <PostItem

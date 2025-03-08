@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import BadgesNav from "@/components/BadgesNav";
+import Image from "next/image";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,10 +40,19 @@ export default function RootLayout({
         >
           <main className="min-h-screen flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col  items-center">
-              <nav className="w-full fixed flex justify-center border-b border-b-foreground/10 h-16 bg-white ">
+              <nav className="w-full fixed flex justify-center border-b border-b-foreground/10 h-16 bg-white dark:bg-black z-50">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-12 items-center font-semibold">
-                    <Link href={"/"}>InfoHero</Link>
+                    <Link href="/" className="flex items-center">
+                      <Image
+                        src="/1.png"
+                        alt="InfoHero Logo"
+                        width={80}
+                        height={80}
+                        className="object-contain"
+                        priority
+                      />
+                    </Link>{" "}
                     <Link href={"/addPost"}>Dodaj informację</Link>
                     <Link href={"/ranking"}>Wyświetl rankingi</Link>
                     <Link href={"/oNas"}>O nas</Link>
@@ -54,7 +64,6 @@ export default function RootLayout({
                     >
                       Wesprzyj nas!
                     </Link>
-
                     <div className="flex items-center gap-2"></div>
                   </div>
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
@@ -64,18 +73,18 @@ export default function RootLayout({
               {/* Update this section to include ad banners */}
               <div className="w-full flex justify-center">
                 {/* Left Ad Banner */}
-                <div className="hidden xl:block w-[400px] h-[850px] sticky top-4 mt-4">
-                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="hidden xl:block w-[400px] h-[850px] sticky top-20">
+                  <div className="w-full h-full bg-gray-200 dark:bg-gray-900 rounded-lg flex items-center justify-center">
                     <span className="text-gray-500">Ad Space</span>
                   </div>
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 max-w-5xl p-5 mt-12">{children}</div>
+                <div className="flex-1 max-w-5xl p-5 mt-16">{children}</div>
 
                 {/* Right Ad Banner */}
-                <div className="hidden xl:block w-[400px] h-[850px] sticky top-4 mt-4">
-                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="hidden xl:block w-[400px] h-[850px] sticky top-20">
+                  <div className="w-full h-full bg-gray-200 dark:bg-gray-900 rounded-lg flex items-center justify-center">
                     <span className="text-gray-500">Ad Space</span>
                   </div>
                 </div>

@@ -304,8 +304,8 @@ const PostItem: FC<PostItemProps> = ({
           theme === "dark" ? "bg-black text-white" : "bg-white text-black"
         } ${
           source === null && fake_detection === true
-            ? "border-red-500 border-2 bg-red-200"
-            : "border-gray-200"
+            ? "border-red-500 border-2"
+            : "border-gray-200 dark:border-gray-800"
         }`}
       >
         <div className="flex items-start">
@@ -395,16 +395,15 @@ const PostItem: FC<PostItemProps> = ({
             onClick={handleCommentSubmit}
             className="ml-2"
           />
+          <IconButton
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+          >
+            <ExpandMoreIcon
+              sx={{ color: theme === "dark" ? "white" : "default" }}
+            />
+          </IconButton>
         </div>
-
-        <IconButton
-          onClick={() => setExpanded(!expanded)}
-          aria-expanded={expanded}
-        >
-          <ExpandMoreIcon
-            sx={{ color: theme === "dark" ? "white" : "default" }}
-          />
-        </IconButton>
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           {comments.map((comment) => (
