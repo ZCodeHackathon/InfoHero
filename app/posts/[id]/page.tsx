@@ -12,6 +12,8 @@ export default function PostsDynamic() {
   const [user, setUser] = useState<any>(null);
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const [userUnlikes, setUserUnlikes] = useState<string[]>([]);
+  const [userCommentLikes, setUserCommentLikes] = useState<string[]>([]);
+  const [userCommentUnlikes, setUserCommentUnlikes] = useState<string[]>([]);
   const router = useRouter();
 
   const fetchPost = useCallback(async () => {
@@ -28,9 +30,9 @@ export default function PostsDynamic() {
       }
 
       const { data: likes, error: likesError } = await supabase
-        .from("Likes")
-        .select("*")
-        .eq("post_id", data.id);
+          .from("Likes")
+          .select("*")
+          .eq("post_id", data.id);
 
       if (likesError) {
         console.error("Error fetching likes:", likesError);
@@ -38,9 +40,9 @@ export default function PostsDynamic() {
       }
 
       const { data: unlikes, error: unlikesError } = await supabase
-        .from("Unlikes")
-        .select("*")
-        .eq("post_id", data.id);
+          .from("Unlikes")
+          .select("*")
+          .eq("post_id", data.id);
 
       if (unlikesError) {
         console.error("Error fetching unlikes:", unlikesError);
@@ -57,16 +59,41 @@ export default function PostsDynamic() {
         return;
       }
 
-      const { data: commentsLikes, error: commentsLikesError } = await supabase
-        .from("LikesComments")
-        .select("*")
-        .eq("comment_id", data.id);
+        // Get all comment IDs
+        const commentIds = comments.map(comment => comment.id);
 
-      if (commentsLikesError) {
-        console.error("Error fetching comment likes:", commentsLikesError);
-        return;
-      }
+        // Fetch likes for all comments in a single query
+        const { data: commentLikes, error: commentLikesError } = await supabase
+            .from("LikesComments")
+            .select("*")
+            .in("comment_id", commentIds);
 
+        if (commentLikesError) {
+          console.error("Error fetching comment likes:", commentLikesError);
+          return;
+        }
+
+        // Fetch dislikes for all comments in a single query
+        const { data: commentUnlikes, error: commentUnlikesError } = await supabase
+            .from("UnlikesComments")
+            .select("*")
+            .in("comment_id", commentIds);
+
+        if (commentUnlikesError) {
+          console.error("Error fetching comment unlikes:", commentUnlikesError);
+          return;
+        }
+
+        // Now assign likes and unlikes counts to each comment
+        const commentsWithLikes = comments.map(comment => {
+          return {
+            ...comment,
+            likes: commentLikes.filter(like => like.comment_id === comment.id).length,
+            unlikes: commentUnlikes.filter(unlike => unlike.comment_id === comment.id).length,
+            userHasLiked: userCommentLikes.includes(comment.id),
+            userHasUnliked: userCommentUnlikes.includes(comment.id)
+          };
+        });
       const { data: postBadges, error: postBadgesError } = await supabase
         .from("post_badges")
         .select("*")
@@ -91,11 +118,15 @@ export default function PostsDynamic() {
 
       const postWithCommentsAndBadges = {
         ...data,
-        comments: comments,
+        comments: commentsWithLikes,
         badges: postBadges.map((pb) => badgeMap.get(pb.badge_id)),
+        likes: likes.length,
+        unlikes: unlikes.length,
       };
 
       setPost(postWithCommentsAndBadges);
+
+      console.log(postWithCommentsAndBadges.comments);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -237,6 +268,85 @@ export default function PostsDynamic() {
     }
   };
 
+  const handleToggleCommentLike = async (commentId: string) => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const hasLiked = userCommentLikes.includes(commentId);
+
+    if (hasLiked) {
+      const { error } = await supabase
+          .from("LikesComments")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("comment_id", commentId);
+
+      if (error) {
+        console.error("Error unliking comment:", error);
+      } else {
+        setUserCommentLikes((prevLikes) =>
+            prevLikes.filter((id) => id !== commentId)
+        );
+        fetchPost();
+      }
+    } else {
+      const { error } = await supabase
+          .from("LikesComments")
+          .insert([
+            { user_id: user.id, user_name: user.username, comment_id: commentId },
+          ]);
+
+      if (error) {
+        console.error("Error liking comment:", error);
+      } else {
+        setUserCommentLikes((prevLikes) => [...prevLikes, commentId]);
+        fetchPost();
+
+      }
+    }
+  };
+
+  const handleToggleCommentUnlike = async (commentId: string) => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const hasUnliked = userCommentUnlikes.includes(commentId);
+
+    if (hasUnliked) {
+      const { error } = await supabase
+          .from("UnlikesComments")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("comment_id", commentId);
+
+      if (error) {
+        console.error("Error removing unlike from comment:", error);
+      } else {
+        setUserCommentUnlikes((prevUnlikes) =>
+            prevUnlikes.filter((id) => id !== commentId)
+        );
+        fetchPost();
+      }
+    } else {
+      const { error } = await supabase
+          .from("UnlikesComments")
+          .insert([
+            { user_id: user.id, user_name: user.username, comment_id: commentId },
+          ]);
+
+      if (error) {
+        console.error("Error unliking comment:", error);
+      } else {
+        setUserCommentUnlikes((prevUnlikes) => [...prevUnlikes, commentId]);
+        fetchPost();
+
+      }
+    }
+  };
   const handleComment = async (postId: string, commentContent: string) => {
     if (!user) {
       router.push("/sign-in");
@@ -324,6 +434,12 @@ export default function PostsDynamic() {
           onToggleLike={() => handleToggleLike(post.id)}
           onToggleUnlike={() => handleToggleUnlike(post.id)} // Przekaż funkcję handleToggleunlike
           onComment={(commentContent) => handleComment(post.id, commentContent)}
+          onToggleCommentLike={(commentId) =>
+              handleToggleCommentLike(commentId)
+          }
+          onToggleCommentUnlike={(commentId) =>
+              handleToggleCommentUnlike(commentId)
+          }
           onDeleteComment={(commentId) =>
             handleDeleteComment(commentId, post.id)
           }

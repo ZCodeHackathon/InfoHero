@@ -64,7 +64,7 @@ type PostItemProps = {
   router: any;
   fake_detection: boolean;
   source: string;
-};
+ };
 
 const PostItem: FC<PostItemProps> = ({
   id,
