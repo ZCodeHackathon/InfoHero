@@ -342,6 +342,7 @@ export default function ProfilePage() {
                     unlikes={post.unlikes}
                     comments={post.comments}
                     badges={post.badges}
+                    source={post.source}
                     userHasLiked={userLikes.includes(post.id)}
                     userHasUnliked={userUnlikes.includes(post.id)}
                     onToggleLike={() => handleToggleLike(post.id)}
