@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { styled } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { ThumbsDown, ThumbsUp } from "lucide-react"; // Import ikony unlike
 
 type Comment = {
   id: string;
@@ -31,30 +32,22 @@ type PostItemProps = {
   title: string;
   user_name: string;
   user_avatar: string;
-  image_url?: string; // Teraz obraz jest opcjonalny
+  image_url?: string;
   content: string;
   hashtags: string[];
   likes: number;
+  unlikes: number; // Dodaj pole unlikes
   comments: Comment[];
   userHasLiked: boolean;
+  userHasUnliked: boolean; // Dodaj pole userHasUnliked
   onToggleLike: () => void;
+  onToggleUnlike: () => void; // Dodaj funkcję onToggleUnlike
   onComment: (commentContent: string) => void;
   onDeleteComment: (commentId: string) => void;
   currentUser: any;
   badges: Badge[];
   router: any;
 };
-
-const ExpandMore = styled((props: IconButtonProps & { expand: boolean }) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme }) => ({
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-  transform: (props) => (props.expand ? "rotate(180deg)" : "rotate(0deg)"),
-}));
 
 const PostItem: FC<PostItemProps> = ({
   id,
@@ -65,9 +58,12 @@ const PostItem: FC<PostItemProps> = ({
   content,
   hashtags,
   likes,
+  unlikes, // Dodaj pole unlikes
   comments,
   userHasLiked,
+  userHasUnliked, // Dodaj pole userHasUnliked
   onToggleLike,
+  onToggleUnlike, // Dodaj funkcję onToggleUnlike
   onComment,
   onDeleteComment,
   currentUser,
@@ -75,13 +71,15 @@ const PostItem: FC<PostItemProps> = ({
   router,
 }) => {
   const { theme } = useTheme();
-  const [hasLiked, setHasLiked] = useState(userHasLiked);
   const [commentText, setCommentText] = useState("");
   const [expanded, setExpanded] = useState(false);
 
   const handleLikeClick = () => {
     onToggleLike();
-    setHasLiked(!hasLiked);
+  };
+
+  const handleUnlikeClick = () => {
+    onToggleUnlike();
   };
 
   const handleCommentSubmit = () => {
@@ -97,17 +95,32 @@ const PostItem: FC<PostItemProps> = ({
     }
   };
 
+  // Funkcja do przekierowania na profil użytkownika
+  const goToUserProfile = (userId: string) => {
+    router.push(`/profile/${userId}`); // Przekierowanie do profilu użytkownika
+  };
+
   return (
     <div
       key={id}
-      className={`p-2 rounded-md shadow-lg border  ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
+      className={`p-2 rounded-md shadow-lg border ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
     >
-      <div className="flex items-center">
-        <Avatar src={user_avatar} sx={{ bgcolor: red[500], marginRight: 2 }}>
+      <div className="flex items-start">
+        <Avatar
+          src={user_avatar}
+          sx={{ bgcolor: red[500], marginRight: 2 }}
+          onClick={() => goToUserProfile(user_avatar)} // Kliknięcie na avatar
+          style={{ cursor: "pointer" }}
+        >
           {user_name.charAt(0)}
         </Avatar>
-        <div>
-          <p className="text-sm text-gray-500">Posted by {user_name}</p>
+        <div className="truncate">
+          <p
+            className="text-sm text-gray-500 cursor-pointer"
+            onClick={() => goToUserProfile(user_avatar)} // Kliknięcie na nazwisko
+          >
+            Posted by {user_name}
+          </p>
           <h2 className="text-xl font-bold">{title}</h2>
         </div>
       </div>
@@ -133,16 +146,24 @@ const PostItem: FC<PostItemProps> = ({
       <p className="mt-2 truncate">{content}</p>
 
       <div className="flex flex-row justify-between items-center mt-2">
-        <p>{likes} Likes</p>
+        <div className="flex space-x-2">
+          <p className="text-green-500"> {likes > 0 ? `+${likes}` : likes}</p>
+          <p className="text-red-500">
+            {unlikes > 0 ? `-${unlikes}` : unlikes}
+          </p>
+        </div>
         <p>{comments.length} Comments</p>
       </div>
 
       <div className="flex items-center mt-2">
-        <FavoriteIcon
-          style={{ color: hasLiked ? "red" : "grey", fontSize: 32 }}
+        <ThumbsUp
+          style={{ color: userHasLiked ? "green" : "grey", fontSize: 32 }}
           onClick={handleLikeClick}
         />
-
+        <ThumbsDown
+          style={{ color: userHasUnliked ? "red" : "grey", fontSize: 32 }}
+          onClick={handleUnlikeClick}
+        />
         <Input
           type="text"
           placeholder="Write a comment..."
@@ -150,7 +171,6 @@ const PostItem: FC<PostItemProps> = ({
           onChange={(e) => setCommentText(e.target.value)}
           className="flex-1 px-4 py-2 border rounded-md ml-4"
         />
-
         <AddCommentIcon
           style={{ color: "grey", fontSize: 32 }}
           onClick={handleCommentSubmit}

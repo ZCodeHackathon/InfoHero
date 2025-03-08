@@ -27,6 +27,7 @@ type Post = {
   image_url: string;
   content: string;
   hashtags: string[];
+  unlikes: number;
   likes: number;
   comments: Comment[];
   badges: Badge[];
@@ -37,6 +38,7 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [user, setUser] = useState<any>(null);
   const [userLikes, setUserLikes] = useState<string[]>([]);
+  const [userUnlikes, setUserUnlikes] = useState<string[]>([]);
   const supabase = createClient();
   const router = useRouter();
 
@@ -51,6 +53,24 @@ export default function Home() {
         return;
       }
       const postIds = data.map((post: Post) => post.id);
+      const { data: likes, error: likesError } = await supabase
+        .from("Likes")
+        .select("*")
+        .in("post_id", postIds);
+
+      if (likesError) {
+        console.error("Error fetching likes:", likesError);
+        return;
+      }
+      const { data: unlikes, error: unlikesError } = await supabase
+        .from("Unlikes")
+        .select("*")
+        .in("post_id", postIds);
+
+      if (unlikesError) {
+        console.error("Error fetching unlikes:", unlikesError);
+        return;
+      }
       const { data: comments, error: commentsError } = await supabase
         .from("Comments")
         .select("*")
@@ -83,9 +103,15 @@ export default function Home() {
 
       const postsWithCommentsAndBadges = data.map((post: Post) => ({
         ...post,
+        unlikes: unlikes.filter(
+          (unlike: { post_id: string }) => unlike.post_id === post.id
+        ).length, // Pobierz liczbę unlikes
+        likes: likes.filter(
+          (like: { post_id: string }) => like.post_id === post.id
+        ).length, // Pobierz liczbę like'ów
         comments: comments.filter(
-          (comment: Comment) => comment.post_id === post.id
-        ),
+          (comment: { post_id: string }) => comment.post_id === post.id
+        ), // Pobierz komentarze
         badges: postBadges
           .filter((pb) => pb.post_id === post.id)
           .map((pb) => badgeMap.get(pb.badge_id)),
@@ -127,14 +153,29 @@ export default function Home() {
     }
   }, [supabase, user]);
 
+  const fetchUserUnlikes = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("Unlikes")
+      .select("post_id")
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error fetching user unlikes:", error);
+    } else {
+      setUserUnlikes(data.map((unlike: { post_id: string }) => unlike.post_id));
+    }
+  }, [supabase, user]);
+
+  useEffect(() => {
+    fetchUserLikes();
+    fetchUserUnlikes();
+  }, [fetchUserLikes, fetchUserUnlikes]);
+
   useEffect(() => {
     fetchPosts();
     fetchUser();
   }, [fetchPosts, fetchUser]);
-
-  useEffect(() => {
-    fetchUserLikes();
-  }, [fetchUserLikes]);
 
   const handleToggleLike = async (postId: string) => {
     if (!user) {
@@ -155,11 +196,7 @@ export default function Home() {
         console.error("Error unliking post:", error);
       } else {
         setUserLikes((prevLikes) => prevLikes.filter((id) => id !== postId));
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === postId ? { ...post, likes: post.likes - 1 } : post
-          )
-        );
+        fetchPosts(); // Fetch updated posts
       }
     } else {
       const { error } = await supabase
@@ -172,11 +209,46 @@ export default function Home() {
         console.error("Error liking post:", error);
       } else {
         setUserLikes((prevLikes) => [...prevLikes, postId]);
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === postId ? { ...post, likes: post.likes + 1 } : post
-          )
+        fetchPosts(); // Fetch updated posts
+      }
+    }
+  };
+
+  const handleToggleUnlike = async (postId: string) => {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const hasUnliked = userUnlikes.includes(postId);
+
+    if (hasUnliked) {
+      const { error } = await supabase
+        .from("Unlikes")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("post_id", postId);
+
+      if (error) {
+        console.error("Error undisliking post:", error);
+      } else {
+        setUserUnlikes((prevUnlikes) =>
+          prevUnlikes.filter((id) => id !== postId)
         );
+        fetchPosts(); // Fetch updated posts
+      }
+    } else {
+      const { error } = await supabase
+        .from("Unlikes")
+        .insert([
+          { user_id: user.id, user_name: user.username, post_id: postId },
+        ]);
+
+      if (error) {
+        console.error("Error disliking post:", error);
+      } else {
+        setUserUnlikes((prevUnlikes) => [...prevUnlikes, postId]);
+        fetchPosts(); // Fetch updated posts
       }
     }
   };
@@ -203,14 +275,7 @@ export default function Home() {
     if (error) {
       console.error("Error adding comment:", error);
     } else {
-      const addedComment = data[0];
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: [...post.comments, addedComment] }
-            : post
-        )
-      );
+      fetchPosts(); // Fetch updated posts
     }
   };
 
@@ -229,26 +294,15 @@ export default function Home() {
     if (error) {
       console.error("Error deleting comment:", error);
     } else {
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: post.comments.filter(
-                  (comment) => comment.id !== commentId
-                ),
-              }
-            : post
-        )
-      );
+      fetchPosts(); // Fetch updated posts
     }
   };
 
   return (
     <div className="flex flex-col items-center" suppressHydrationWarning={true}>
-      <div className="max-w-5xl flex flex-wrap items-center justify-center">
+      <div className="max-w-5xl flex flex-wrap items-top justify-center">
         {posts.map((post) => (
-          <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2">
+          <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>
             <PostItem
               key={post.id}
               id={post.id}
@@ -258,11 +312,14 @@ export default function Home() {
               image_url={post.image_url}
               content={post.content}
               hashtags={post.hashtags}
+              unlikes={post.unlikes}
               likes={post.likes}
               comments={post.comments}
               badges={post.badges}
               userHasLiked={userLikes.includes(post.id)}
+              userHasUnliked={userUnlikes.includes(post.id)}
               onToggleLike={() => handleToggleLike(post.id)}
+              onToggleUnlike={() => handleToggleUnlike(post.id)}
               onComment={(commentContent) =>
                 handleComment(post.id, commentContent)
               }
