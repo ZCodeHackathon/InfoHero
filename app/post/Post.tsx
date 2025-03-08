@@ -95,21 +95,35 @@ const PostItem: FC<PostItemProps> = ({
     }
   };
 
+  // Funkcja do przekierowania na profil użytkownika
+  const goToUserProfile = (userId: string) => {
+    router.push(`/profile/${userId}`); // Przekierowanie do profilu użytkownika
+  };
+
   return (
-    <Link href={`/posts/${id}`}>
-      <div
-        key={id}
-        className={`p-2 rounded-md shadow-lg border  ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
-      >
-        <div className="flex items-center">
-          <Avatar src={user_avatar} sx={{ bgcolor: red[500], marginRight: 2 }}>
-            {user_name.charAt(0)}
-          </Avatar>
-          <div>
-            <p className="text-sm text-gray-500">Posted by {user_name}</p>
-            <h2 className="text-xl font-bold">{title}</h2>
-          </div>
+    <div
+      key={id}
+      className={`p-2 rounded-md shadow-lg border  ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
+    >
+      <div className="flex items-center">
+        <Avatar 
+          src={user_avatar} 
+          sx={{ bgcolor: red[500], marginRight: 2 }} 
+          onClick={() => goToUserProfile(user_avatar)} // Kliknięcie na avatar
+          style={{ cursor: "pointer" }}
+        >
+          {user_name.charAt(0)}
+        </Avatar>
+        <div>
+          <p 
+            className="text-sm text-gray-500 cursor-pointer"
+            onClick={() => goToUserProfile(user_avatar)} // Kliknięcie na nazwisko
+          >
+            Posted by {user_name}
+          </p>
+          <h2 className="text-xl font-bold">{title}</h2>
         </div>
+      </div>
 
         <div className="flex flex-wrap gap-2">
           {badges.map((badge) => (
