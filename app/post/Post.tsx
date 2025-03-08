@@ -8,6 +8,9 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import { Input } from "@/components/ui/input";
 import { ThumbsDown, ThumbsUp } from "lucide-react"; // Import ikony unlike
 import { createClient } from "@/utils/supabase/client";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 
 type Comment = {
     id: string;
@@ -17,6 +20,8 @@ type Comment = {
     post_id: string;
     content: string;
     created_at: string;
+    userHasLiked: boolean;
+    userHasUnliked: boolean;
 };
 
 type Badge = {
@@ -140,13 +145,13 @@ const PostItem: FC<PostItemProps> = ({
         }
         try {
             console.log("Fetching profile for user ID:", user_id); // Logowanie user_id przed zapytaniem
-    
+
             const { data, error } = await supabase
                 .from("profiles")
                 .select("id, username, avatar_url") // Pobranie wszystkich trzech pól
                 .eq("id", user_id) // Filtrowanie po user_id
                 .single(); // Oczekujemy tylko jeden wynik
-    
+
             if (error) {
                 console.error("Error loading profile:", error);
                 if (error.code === 'PGRST116') {
@@ -179,7 +184,7 @@ const PostItem: FC<PostItemProps> = ({
                 const profiles = data.reduce((acc: any, profile: any) => {
                     acc[profile.id] = profile;
                     return acc;
-                }, {});                
+                }, {});
                 setCommentUserProfiles(profiles); // Store comment authors' profile data
                 console.log("Fetched comment user profiles:", profiles);
             }
@@ -195,7 +200,7 @@ const PostItem: FC<PostItemProps> = ({
 
     console.log("Rendering PostItem with avatar_url:", userProfile?.avatar_url);
 
-    
+
     return (
         <div
             key={id}
@@ -357,7 +362,7 @@ const PostItem: FC<PostItemProps> = ({
                     </div>
                 ))}
             </Collapse>
-          <Snackbar
+            <Snackbar
         open={alert.open}
         autoHideDuration={6000}
         onClose={handleAlertClose}
