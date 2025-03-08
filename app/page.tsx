@@ -4,17 +4,60 @@ import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import PostItem from "./post/Post";
-import { Post } from "@/components/types";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert"; // Import komponentu PostItem
+
+type Comment = {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_avatar: string;
+  post_id: string;
+  content: string;
+  created_at: string;
+};
+type Badge = {
+  id: string;
+  name: string;
+};
+type Post = {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_avatar: string;
+  title: string;
+  image_url: string;
+  content: string;
+  hashtags: string[];
+  unlikes: number;
+  likes: number;
+  comments: Comment[];
+  badges: Badge[];
+  created_at: string;
+};
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [user, setUser] = useState<any>(null);
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const [userUnlikes, setUserUnlikes] = useState<string[]>([]);
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    severity: "success" | "error";
+    message: string;
+  }>({
+    open: false,
+    severity: "success",
+    message: "",
+  });
   const [userCommentLikes, setUserCommentLikes] = useState<string[]>([]);
   const [userCommentUnlikes, setUserCommentUnlikes] = useState<string[]>([]);
   const supabase = createClient();
   const router = useRouter();
+
+  const handleAlertClose = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -354,6 +397,11 @@ export default function Home() {
         console.error("Error liking post:", error);
       } else {
         setUserLikes((prevLikes) => [...prevLikes, postId]);
+        setAlert({
+          open: true,
+          severity: "success",
+          message: "Polubiono post!",
+        });
         fetchPosts(); // Fetch updated posts
       }
     }
@@ -393,6 +441,12 @@ export default function Home() {
         console.error("Error disliking post:", error);
       } else {
         setUserUnlikes((prevUnlikes) => [...prevUnlikes, postId]);
+        setAlert({
+          open: true,
+          severity: "error",
+          message: "Nie podoba Ci się ten post!",
+        });
+
         fetchPosts(); // Fetch updated posts
       }
     }
@@ -483,6 +537,19 @@ export default function Home() {
           </div>
         ))}
       </div>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
