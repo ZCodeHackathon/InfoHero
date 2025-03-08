@@ -483,6 +483,8 @@ export default function Home() {
               user_avatar={post.user_avatar}
               image_url={post.image_url}
               content={post.content}
+              fake_detection={post.fake_detection}
+              source={post.source}
               hashtags={post.hashtags}
               unlikes={post.unlikes}
               likes={post.likes}
