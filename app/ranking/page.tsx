@@ -400,6 +400,9 @@ LIMIT 10;
             fetchPosts(); // Fetch updated posts
         }
     };
+    const goToUserProfile = (userId: string) => {
+        router.push(`/profile/${userId}`);
+    };
     const handleToggleCommentLike = async (commentId: string) => {
         if (!user) {
             router.push("/sign-in");
@@ -464,25 +467,36 @@ LIMIT 10;
 
     return (
         <div className="flex flex-col items-center p-4">
-            <div className="w-full md:w-7/12 max-w-5xl">
+            <div className="w-full md:w-10/12 max-w-5xl">
                 {/* Ten nagłówek i przyciski będą zawsze stabilne */}
                 <h1 className="text-2xl font-semibold mt-4">Rankingi</h1>
 
                 {/* Navbar z przełączaniem między postami a komentarzami */}
-                <div className="mt-8 mb-4 flex space-x-4">
-                    <button
-                        className={`px-4 py-2 rounded-md ${activeTab === "posts" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                        onClick={() => setActiveTab("posts")}
-                    >
-                        Posty
-                    </button>
-                    <button
-                        className={`px-4 py-2 rounded-md ${activeTab === "heroes" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                        onClick={() => setActiveTab("heroes")}
-                    >
-                        Bohaterowie wiarygodności
-                    </button>
+                <div className="mt-8 mb-12 relative h-10">
+                    <div className="absolute left-0 flex space-x-4" style={{width: '320px'}}>
+                        <button
+                            className={`w-36 py-2 rounded-md text-center transition-colors duration-200 ${
+                                activeTab === "posts"
+                                    ? "bg-blue-500 text-white font-medium"
+                                    : "bg-gray-200 hover:bg-gray-300"
+                            }`}
+                            onClick={() => setActiveTab("posts")}
+                        >
+                            Posty
+                        </button>
+                        <button
+                            className={`w-36 py-2 rounded-md text-center transition-colors duration-200 ${
+                                activeTab === "heroes"
+                                    ? "bg-blue-500 text-white font-medium"
+                                    : "bg-gray-200 hover:bg-gray-300"
+                            }`}
+                            onClick={() => setActiveTab("heroes")}
+                        >
+                            Bohaterowie
+                        </button>
+                    </div>
                 </div>
+
 
                 {/* Kontener o stałej wysokości dla zawartości zakładek */}
                 <div className="min-h-[500px]"> {/* Dodaj stałą minimalną wysokość */}
@@ -574,9 +588,9 @@ LIMIT 10;
 
                                         return (
                                             <div
-                                                key={profile.id}
+                                                key={profile.user_id}
                                                 className="border rounded-lg p-4 bg-white shadow-sm flex items-center justify-between"
-                                                style={index < 3 ? { borderWidth: '2px' } : {}}
+                                                style={index < 3 ? {borderWidth: '2px'} : {}}
                                             >
                                                 <div className="flex items-center">
                                                     <div className="relative">
@@ -584,7 +598,8 @@ LIMIT 10;
                                                             className="mr-4"
                                                             src={profile.avatar_url}
                                                             alt={profile.username}
-                                                            sx={{ width: 56, height: 56 }}
+                                                            onClick={() => goToUserProfile(profile.user_id)}
+                                                            sx={{width: 56, height: 56}}
                                                         />
                                                         {index < 3 && (
                                                             <div
