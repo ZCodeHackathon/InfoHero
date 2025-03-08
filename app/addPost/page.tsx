@@ -2,7 +2,7 @@
 
 import {createClient} from "@/utils/supabase/client";
 import {useState, useEffect} from 'react';
-import {useRouter} from 'next/navigation';
+import {redirect, useRouter} from 'next/navigation';
 import Select from "react-select";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
@@ -32,6 +32,7 @@ export default function AddPost() {
     const supabase = createClient();
     const router = useRouter();
 
+
     const handleAlertClose = () => {
         setAlert({...alert, open: false});
     };
@@ -47,6 +48,9 @@ export default function AddPost() {
                 .eq("id", user.id)
                 .single();
             setUser({...user, username: profile?.username});
+        }else{
+            return redirect("/sign-in");
+
         }
     };
     const fetchBadges = async () => {
@@ -198,12 +202,24 @@ export default function AddPost() {
         setContent(e.target.value);
         setIsVerified(false); // Reset verification status on content change
     };
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
 
+            if (!user) {
+                // Użytkownik nie jest zalogowany, przekieruj natychmiast
+                router.push("/sign-in");
+                return;
+            }
+        };
+        checkAuth();
+    }, [router]);
 
     return (
-        <div className="bg-black p-4 rounded-md shadow-lg w-full max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold text-white mb-4">Dodaj nowy post</h1>
-            <form onSubmit={handleSubmit}>
+        <>
+        {user && <div className="bg-black p-4 rounded-md shadow-lg w-full max-w-xl mx-auto">
+               <h1 className="text-2xl font-bold text-white mb-4">Dodaj nowy post</h1>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label htmlFor="title" className="text-white">
                         Tytuł
@@ -286,6 +302,7 @@ export default function AddPost() {
                     {alert.message}
                 </Alert>
             </Snackbar>
-        </div>
+        </div>}
+        </>
     );
 }

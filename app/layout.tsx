@@ -44,6 +44,7 @@ export default function RootLayout({
                   <div className="flex gap-5 items-center font-semibold">
                     <Link href={"/"}>infoHero</Link>
                     <Link href={"/addPost"}>Dodaj informację</Link>
+                    <Link href={"/ranking"}>Wyświetl rankingi</Link>
                     <div className="flex items-center gap-2">
                       
                     </div>
