@@ -13,6 +13,12 @@ import Alert from "@mui/material/Alert";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Comment = {
   id: string;
@@ -223,30 +229,65 @@ const PostItem: FC<PostItemProps> = ({
     console.log(source);
   }
 
-
-
-
-
-  
   return (
     <div>
-         <div
+      <div
         className={` text-sm font-bold rounded-t-md  ${source !== null ? "text-green-500" : "text-red-500"}`}
         style={{ width: "10%", textAlign: "right", float: "right" }}
       >
-        {source !== null ? <MenuBookOutlinedIcon /> : <MenuBookOutlinedIcon />}
+        {source !== null ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <MenuBookOutlinedIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Podane zostały źródła</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <MenuBookOutlinedIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Źródła nie zostały podane</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
       <div
         className={`text-sm font-bold rounded-t-md  ${fake_detection === true ? "text-red-500" : "text-green-500"}`}
         style={{ width: "10%", textAlign: "right", float: "right" }}
       >
         {fake_detection === true ? (
-          <SmartToyOutlinedIcon />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <SmartToyOutlinedIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Fake news wedug AI</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ) : (
-          <SmartToyOutlinedIcon />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <SmartToyOutlinedIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Prawda uznana przez AI</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
-     
+
       <div
         key={id}
         className={`p-2 rounded-b-md shadow-lg border ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
@@ -268,31 +309,34 @@ const PostItem: FC<PostItemProps> = ({
             <div className="w-10 h-10 rounded-full bg-gray-300" />
           )}
           <div className="w-full">
-  <p
-    className="text-sm text-gray-500 cursor-pointer"
-    onClick={() => goToUserProfile(user_id)}
-  >
-    Posted by {user_name}
-  </p>
-  <h2 className="text-xl font-bold break-words">{title}</h2>
-</div>
-
+            <p
+              className="text-sm text-gray-500 cursor-pointer"
+              onClick={() => goToUserProfile(user_id)}
+            >
+              Posted by {user_name}
+            </p>
+            <h2
+              className="text-xl font-bold break-words cursor-pointer hover:text-blue-500 transition-colors"
+              onClick={() => router.push(`/posts/${id}`)}
+            >
+              {title}
+            </h2>
+          </div>
         </div>
 
         {/* Inne elementy posta */}
         <div className="flex flex-wrap gap-2">
-  {badges.map((badge) => (
-    <Badge
-      key={badge.id}
-      className="cursor-pointer"
-      style={{ backgroundColor: badge.color }} // Dynamicznie przypisujemy kolor
-      onClick={() => router.push(`/tag/${badge.name}`)}
-    >
-      {badge.name}
-    </Badge>
-  ))}
-</div>
-
+          {badges.map((badge) => (
+            <Badge
+              key={badge.id}
+              className="cursor-pointer"
+              style={{ backgroundColor: badge.color }} // Dynamicznie przypisujemy kolor
+              onClick={() => router.push(`/tag/${badge.name}`)}
+            >
+              {badge.name}
+            </Badge>
+          ))}
+        </div>
 
         {image_url && (
           <div className="relative">
@@ -372,37 +416,40 @@ const PostItem: FC<PostItemProps> = ({
                     {new Date(comment.created_at).toLocaleString()}
                   </p>
                   <p>{comment.content}</p>
-                  <div className="flex items-center mt-2">
-                    <ThumbsUp
-                      style={{
-                        color: comment.userHasLiked ? "green" : "grey",
-                        fontSize: 24,
-                      }}
-                      onClick={() =>
-                        onToggleCommentLike && onToggleCommentLike(comment.id)
-                      }
-                    />
+                  <div className="flex items-center mt-2 space-x-4">
+                    <div className="flex items-center">
+                      <ThumbsUp
+                        className="cursor-pointer hover:scale-110 transition-transform"
+                        size={24}
+                        style={{
+                          color: comment.userHasLiked ? "green" : "grey",
+                          transition: "color 0.2s ease",
+                        }}
+                        onClick={() => onToggleCommentLike(comment.id)}
+                      />
+                      <span className="ml-2 text-green-500">
+                        {comment.likes > 0
+                          ? `+${comment.likes}`
+                          : comment.likes}
+                      </span>
+                    </div>
 
-                    <ThumbsDown
-                      style={{
-                        color: comment.userHasUnliked ? "red" : "grey",
-                        fontSize: 24,
-                      }}
-                      onClick={() =>
-                        onToggleCommentUnlike &&
-                        onToggleCommentUnlike(comment.id)
-                      }
-                    />
-
-                    <p className="ml-2 text-green-500">
-                      {comment.likes > 0 ? `+${comment.likes}` : comment.likes}
-                    </p>
-
-                    <p className="ml-2 text-red-500">
-                      {comment.unlikes > 0
-                        ? `-${comment.unlikes}`
-                        : comment.unlikes}
-                    </p>
+                    <div className="flex items-center">
+                      <ThumbsDown
+                        className="cursor-pointer hover:scale-110 transition-transform"
+                        size={24}
+                        style={{
+                          color: comment.userHasUnliked ? "red" : "grey",
+                          transition: "color 0.2s ease",
+                        }}
+                        onClick={() => onToggleCommentUnlike(comment.id)}
+                      />
+                      <span className="ml-2 text-red-500">
+                        {comment.unlikes > 0
+                          ? `-${comment.unlikes}`
+                          : comment.unlikes}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
