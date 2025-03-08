@@ -2,39 +2,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import PostItem from "@/app/post/Post"; // Import komponentu PostItem
-import { ThumbsDown } from "lucide-react"; // Import ikony unlike
-
-type Comment = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-};
-
-type Badge = {
-  id: string;
-  name: string;
-};
-
-type Post = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  title: string;
-  image_url: string;
-  content: string;
-  hashtags: string[];
-  likes: number;
-  unlikes: number; // Dodaj pole unlikes
-  comments: Comment[];
-  badges: Badge[];
-  created_at: string;
-};
+import PostItem from "@/app/post/Post";
+import { Post } from "@/components/types";
 
 export default function PostsDynamic() {
   const params = useParams<{ id: string }>();

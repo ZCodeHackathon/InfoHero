@@ -4,43 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import PostItem from "../../post/Post";
 import Avatar from "@mui/material/Avatar";
-
-type Profile = {
-  id: string;
-  username: string;
-  created_at: string;
-};
-
-type Comment = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-};
-
-type Badge = {
-  id: string;
-  name: string;
-};
-
-type Post = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  title: string;
-  image_url?: string;
-  content: string;
-  hashtags: string[];
-  likes: number;
-  unlikes: number;
-  comments: Comment[];
-  badges: Badge[];
-  created_at: string;
-};
+import { Badge, Comment, Post, Profile } from "@/components/types";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -106,7 +70,8 @@ export default function ProfilePage() {
           console.error("Błąd ładowania odznak:", postBadgesError);
         }
 
-        const badgeIds = postBadges.map((postBadge: any) => postBadge.badge_id);
+        const badgeIds =
+          postBadges?.map((postBadge: any) => postBadge.badge_id) || [];
         const { data: badges, error: badgesError } = await supabase
           .from("badges")
           .select("*")
@@ -135,24 +100,28 @@ export default function ProfilePage() {
         }
 
         const badgeMap = new Map(
-          badges.map((badge: Badge) => [badge.id, badge])
+          badges?.map((badge: Badge) => [badge.id, badge])
         );
 
-        // Dodanie komentarzy, odznak, like'ów i unlikes do postów
         const postsWithDetails = data.map((post: Post) => ({
           ...post,
-          comments: comments.filter(
-            (comment: Comment) => comment.post_id === post.id
-          ),
+          comments:
+            comments?.filter(
+              (comment: Comment) => comment.post_id === post.id
+            ) || [],
           badges: postBadges
-            .filter((pb: any) => pb.post_id === post.id)
-            .map((pb: any) => badgeMap.get(pb.badge_id)),
-          likes: likes.filter(
-            (like: { post_id: string }) => like.post_id === post.id
-          ).length,
-          unlikes: unlikes.filter(
-            (unlike: { post_id: string }) => unlike.post_id === post.id
-          ).length,
+            ? postBadges
+                .filter((pb: any) => pb.post_id === post.id)
+                .map((pb: any) => badgeMap.get(pb.badge_id))
+            : [],
+          likes:
+            likes?.filter(
+              (like: { post_id: string }) => like.post_id === post.id
+            ).length || 0,
+          unlikes:
+            unlikes?.filter(
+              (unlike: { post_id: string }) => unlike.post_id === post.id
+            ).length || 0,
         }));
 
         setPosts(postsWithDetails);

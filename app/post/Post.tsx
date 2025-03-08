@@ -11,43 +11,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { ThumbsDown, ThumbsUp } from "lucide-react"; // Import ikony unlike
-
-type Comment = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-};
-
-type Badge = {
-  id: string;
-  name: string;
-};
-
-type PostItemProps = {
-  id: string;
-  title: string;
-  user_name: string;
-  user_avatar: string;
-  image_url?: string;
-  content: string;
-  hashtags: string[];
-  likes: number;
-  unlikes: number; // Dodaj pole unlikes
-  comments: Comment[];
-  userHasLiked: boolean;
-  userHasUnliked: boolean; // Dodaj pole userHasUnliked
-  onToggleLike: () => void;
-  onToggleUnlike: () => void; // Dodaj funkcję onToggleUnlike
-  onComment: (commentContent: string) => void;
-  onDeleteComment: (commentId: string) => void;
-  currentUser: any;
-  badges: Badge[];
-  router: any;
-};
+import { PostItemProps } from "@/components/types";
 
 const PostItem: FC<PostItemProps> = ({
   id,
@@ -58,14 +22,16 @@ const PostItem: FC<PostItemProps> = ({
   content,
   hashtags,
   likes,
-  unlikes, // Dodaj pole unlikes
+  unlikes,
   comments,
   userHasLiked,
-  userHasUnliked, // Dodaj pole userHasUnliked
+  userHasUnliked,
   onToggleLike,
-  onToggleUnlike, // Dodaj funkcję onToggleUnlike
+  onToggleUnlike,
   onComment,
   onDeleteComment,
+  onToggleCommentLike,
+  onToggleCommentUnlike,
   currentUser,
   badges,
   router,
@@ -75,23 +41,31 @@ const PostItem: FC<PostItemProps> = ({
   const [expanded, setExpanded] = useState(false);
 
   const handleLikeClick = () => {
-    onToggleLike();
+    if (onToggleLike) {
+      onToggleLike();
+    }
   };
 
   const handleUnlikeClick = () => {
-    onToggleUnlike();
+    if (onToggleUnlike) {
+      onToggleUnlike();
+    }
   };
 
   const handleCommentSubmit = () => {
     if (commentText.trim() !== "") {
-      onComment(commentText);
+      if (onComment) {
+        onComment(commentText);
+      }
       setCommentText("");
     }
   };
 
   const confirmDeleteComment = (commentId: string) => {
     if (confirm("Are you sure you want to delete this comment?")) {
-      onDeleteComment(commentId);
+      if (onDeleteComment) {
+        onDeleteComment(commentId);
+      }
     }
   };
 
@@ -206,6 +180,34 @@ const PostItem: FC<PostItemProps> = ({
                   {new Date(comment.created_at).toLocaleString()}
                 </p>
                 <p>{comment.content}</p>
+                <div className="flex items-center mt-2">
+                  <ThumbsUp
+                    style={{
+                      color: comment.userHasLiked ? "green" : "grey",
+                      fontSize: 24,
+                    }}
+                    onClick={() =>
+                      onToggleCommentLike && onToggleCommentLike(comment.id)
+                    }
+                  />
+                  <ThumbsDown
+                    style={{
+                      color: comment.userHasUnliked ? "red" : "grey",
+                      fontSize: 24,
+                    }}
+                    onClick={() =>
+                      onToggleCommentUnlike && onToggleCommentUnlike(comment.id)
+                    }
+                  />
+                  <p className="ml-2 text-green-500">
+                    {comment.likes > 0 ? `+${comment.likes}` : comment.likes}
+                  </p>
+                  <p className="ml-2 text-red-500">
+                    {comment.unlikes > 0
+                      ? `-${comment.unlikes}`
+                      : comment.unlikes}
+                  </p>
+                </div>
               </div>
             </div>
             {currentUser?.id === comment.user_id && (

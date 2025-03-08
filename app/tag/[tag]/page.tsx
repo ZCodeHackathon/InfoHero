@@ -4,35 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import PostItem from "../../post/Post"; // Import komponentu PostItem
-
-type Comment = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-};
-type Badge = {
-  id: string;
-  name: string;
-};
-type Post = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  title: string;
-  image_url: string;
-  content: string;
-  hashtags: string[];
-  likes: number;
-  unlikes: number;
-  comments: Comment[];
-  badges: Badge[];
-  created_at: string;
-};
+import { Comment, Post } from "@/components/types";
 
 export default function Tag() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -42,14 +14,14 @@ export default function Tag() {
   const supabase = createClient();
   const router = useRouter();
   const params = useParams();
-  const { tag } = params;
+  const { tag } = params || {};
 
   const fetchPosts = useCallback(async () => {
     try {
       const { data: singleBadge, error: singleBadgeError } = await supabase
         .from("badges")
         .select("id, name")
-        .ilike("name", tag.toString())
+        .ilike("name", tag?.toString() || "")
         .single();
 
       if (singleBadgeError) {
