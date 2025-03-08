@@ -465,8 +465,8 @@ LIMIT 10;
     return (
         <div className="flex flex-col items-center p-4">
             <div className="w-full md:w-7/12 max-w-5xl">
+                {/* Ten nagłówek i przyciski będą zawsze stabilne */}
                 <h1 className="text-2xl font-semibold mt-4">Rankingi</h1>
-
 
                 {/* Navbar z przełączaniem między postami a komentarzami */}
                 <div className="mt-8 mb-4 flex space-x-4">
@@ -484,77 +484,143 @@ LIMIT 10;
                     </button>
                 </div>
 
-                {/* Dynamiczny widok postów lub bohaterów */}
-                {activeTab === "posts" && (
-                    <div>
-                        <h2 className="text-xl font-semibold">Najlepsze posty</h2>
-                        <div className="space-y-4">
-                            {posts.length > 0 ? (
-                                posts.map((post) => (
-                                    <PostItem
-                                        key={post.id}
-                                        id={post.id}
-                                        user_id={post.user_id}
-                                        user_name={post.user_name}
-                                        user_avatar={post.user_avatar}
-                                        title={post.title}
-                                        image_url={post.image_url}
-                                        content={post.content}
-                                        hashtags={post.hashtags}
-                                        likes={post.likes}
-                                        unlikes={post.unlikes}
-                                        comments={post.comments}
-                                        badges={post.badges}
-                                        userHasLiked={userLikes.includes(post.id)}
-                                        userHasUnliked={userUnlikes.includes(post.id)}
-                                        onToggleLike={() => handleToggleLike(post.id)}
-                                        onToggleUnlike={() => handleToggleUnlike(post.id)}
-                                        onToggleCommentLike={(commentId) =>
-                                            handleToggleCommentLike(commentId)
-                                        }
-                                        onToggleCommentUnlike={(commentId) =>
-                                            handleToggleCommentUnlike(commentId)
-                                        }
-                                        onComment={(commentContent) =>
-                                            handleComment(post.id, commentContent)
-                                        }
-                                        onDeleteComment={(commentId) =>
-                                            handleDeleteComment(commentId, post.id)
-                                        }
-                                        router={router}
-                                    />
-                                ))
-                            ) : (
-                                <p>Brak postów.</p>
-                            )}
+                {/* Kontener o stałej wysokości dla zawartości zakładek */}
+                <div className="min-h-[500px]"> {/* Dodaj stałą minimalną wysokość */}
+                    {/* Dynamiczny widok postów lub bohaterów */}
+                    {activeTab === "posts" && (
+                        <div>
+                            <h2 className="text-xl font-semibold">Najlepsze posty</h2>
+                            <div className="space-y-4">
+                                {posts.length > 0 ? (
+                                    posts.map((post) => (
+                                        <PostItem
+                                            key={post.id}
+                                            id={post.id}
+                                            user_id={post.user_id}
+                                            user_name={post.user_name}
+                                            user_avatar={post.user_avatar}
+                                            title={post.title}
+                                            image_url={post.image_url}
+                                            content={post.content}
+                                            hashtags={post.hashtags}
+                                            likes={post.likes}
+                                            unlikes={post.unlikes}
+                                            comments={post.comments}
+                                            badges={post.badges}
+                                            userHasLiked={userLikes.includes(post.id)}
+                                            userHasUnliked={userUnlikes.includes(post.id)}
+                                            onToggleLike={() => handleToggleLike(post.id)}
+                                            onToggleUnlike={() => handleToggleUnlike(post.id)}
+                                            onToggleCommentLike={(commentId) =>
+                                                handleToggleCommentLike(commentId)
+                                            }
+                                            onToggleCommentUnlike={(commentId) =>
+                                                handleToggleCommentUnlike(commentId)
+                                            }
+                                            onComment={(commentContent) =>
+                                                handleComment(post.id, commentContent)
+                                            }
+                                            onDeleteComment={(commentId) =>
+                                                handleDeleteComment(commentId, post.id)
+                                            }
+                                            router={router}
+                                        />
+                                    ))
+                                ) : (
+                                    <p>Brak postów.</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {activeTab === "heroes" && (
-                    <div>
-                        <h2 className="text-xl font-semibold">Bohaterowie wiarygodności</h2>
-                        <div className="space-y-4">
-                            {profiles.length > 0 ? (
-                                profiles.map((profile) => (
-                                    <div key={profile.id} className="border-t pt-2 mt-2">
-                                        <div className="flex items-center">
-                                            <Avatar
-                                                className="mr-2"
-                                                src={profile.avatar_url}
-                                                alt={profile.username}
-                                            />
-                                            <p className="font-semibold">{profile.username}</p>
-                                            <p className="font-semibold">Liczba polubień: {profile.total_likes}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>Brak komentarzy.</p>
-                            )}
+                    {activeTab === "heroes" && (
+                        <div>
+                            <h2 className="text-xl font-semibold">Bohaterowie wiarygodności</h2>
+                            <div className="space-y-4">
+                                {profiles.length > 0 ? (
+                                    profiles.map((profile, index) => {
+                                        // Określanie stylu dla miejsc na podium
+                                        let medalStyle = {};
+                                        let medalText = "";
+
+                                        if (index === 0) {
+                                            // Złoty medal - 1. miejsce
+                                            medalStyle = {
+                                                backgroundColor: '#FFD700',
+                                                color: '#000',
+                                                border: '2px solid #DAA520',
+                                                boxShadow: '0 2px 10px rgba(218, 165, 32, 0.6)'
+                                            };
+                                            medalText = "🥇 1. miejsce";
+                                        } else if (index === 1) {
+                                            // Srebrny medal - 2. miejsce
+                                            medalStyle = {
+                                                backgroundColor: '#C0C0C0',
+                                                color: '#000',
+                                                border: '2px solid #A9A9A9',
+                                                boxShadow: '0 2px 10px rgba(169, 169, 169, 0.6)'
+                                            };
+                                            medalText = "🥈 2. miejsce";
+                                        } else if (index === 2) {
+                                            // Brązowy medal - 3. miejsce
+                                            medalStyle = {
+                                                backgroundColor: '#CD7F32',
+                                                color: '#000',
+                                                border: '2px solid #8B4513',
+                                                boxShadow: '0 2px 10px rgba(139, 69, 19, 0.6)'
+                                            };
+                                            medalText = "🥉 3. miejsce";
+                                        }
+
+                                        return (
+                                            <div
+                                                key={profile.id}
+                                                className="border rounded-lg p-4 bg-white shadow-sm flex items-center justify-between"
+                                                style={index < 3 ? { borderWidth: '2px' } : {}}
+                                            >
+                                                <div className="flex items-center">
+                                                    <div className="relative">
+                                                        <Avatar
+                                                            className="mr-4"
+                                                            src={profile.avatar_url}
+                                                            alt={profile.username}
+                                                            sx={{ width: 56, height: 56 }}
+                                                        />
+                                                        {index < 3 && (
+                                                            <div
+                                                                className="absolute -top-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                                                                style={{
+                                                                    backgroundColor: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32',
+                                                                    border: '1px solid white'
+                                                                }}
+                                                            >
+                                                                {index + 1}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-lg">{profile.username}</p>
+                                                        <p className="text-gray-500">Użytkownik platformy</p>
+
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className="px-4 py-2 rounded-full font-semibold flex flex-col items-center"
+                                                    style={medalStyle}
+                                                >
+
+                                                    <span>{profile.total_likes} polubień</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p>Ładowanie bohaterów...</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
