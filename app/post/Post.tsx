@@ -232,8 +232,8 @@ const PostItem: FC<PostItemProps> = ({
   return (
     <div>
       <div
-        className={` text-sm font-bold rounded-t-md  ${source !== null ? "text-green-500" : "text-red-500"}`}
-        style={{ width: "10%", textAlign: "right", float: "right" }}
+        className={`text-sm font-bold rounded-md p-2 ${source !== null ? "text-green-500" : "text-red-500"}`}
+        style={{ width: "12%", textAlign: "right", float: "right" }}
       >
         {source !== null ? (
           <TooltipProvider>
@@ -243,6 +243,16 @@ const PostItem: FC<PostItemProps> = ({
               </TooltipTrigger>
               <TooltipContent>
                 <p>Podane zostały źródła</p>
+                {source && (
+                  <a
+                    href={source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    Zobacz źródło
+                  </a>
+                )}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -260,8 +270,8 @@ const PostItem: FC<PostItemProps> = ({
         )}
       </div>
       <div
-        className={`text-sm font-bold rounded-t-md  ${fake_detection === true ? "text-red-500" : "text-green-500"}`}
-        style={{ width: "10%", textAlign: "right", float: "right" }}
+        className={`text-sm font-bold rounded-md p-2 ${fake_detection === true ? "text-red-500" : "text-green-500"}`}
+        style={{ width: "12%", textAlign: "right", float: "right" }}
       >
         {fake_detection === true ? (
           <TooltipProvider>
@@ -290,7 +300,13 @@ const PostItem: FC<PostItemProps> = ({
 
       <div
         key={id}
-        className={`p-2 rounded-b-md shadow-lg border ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"}`}
+        className={`p-2 rounded-md shadow-lg border ${
+          theme === "dark" ? "bg-black text-white" : "bg-white text-black"
+        } ${
+          source === null && fake_detection === true
+            ? "border-red-500 border-2 bg-red-100"
+            : "border-gray-200"
+        }`}
       >
         <div className="flex items-start">
           {/* Avatar użytkownika */}
