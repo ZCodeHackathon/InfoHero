@@ -300,7 +300,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center" suppressHydrationWarning={true}>
-      <div className="max-w-5xl flex flex-wrap items-center justify-center">
+      <div className="max-w-5xl flex flex-wrap items-top justify-center">
         {posts.map((post) => (
           <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>
             <PostItem
