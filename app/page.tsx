@@ -3,10 +3,12 @@
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PostItem from "./post/Post";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert"; // Import komponentu PostItem
 import { Post } from "@/components/types";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -24,12 +26,26 @@ export default function Home() {
   });
   const [userCommentLikes, setUserCommentLikes] = useState<string[]>([]);
   const [userCommentUnlikes, setUserCommentUnlikes] = useState<string[]>([]);
+  const [badges, setBadges] = useState<any[]>([]); // State for badges
   const supabase = createClient();
   const router = useRouter();
 
   const handleAlertClose = () => {
     setAlert({ ...alert, open: false });
   };
+
+  const fetchBadges = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from("badges").select("*");
+      if (error) {
+        console.error("Error fetching badges:", error);
+        return;
+      }
+      setBadges(data);
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+    }
+  }, [supabase]);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -257,7 +273,8 @@ export default function Home() {
   useEffect(() => {
     fetchPosts();
     fetchUser();
-  }, [fetchPosts, fetchUser]);
+    fetchBadges(); // Fetch badges on mount
+  }, [fetchPosts, fetchUser, fetchBadges]);
 
   const handleToggleCommentLike = async (commentId: string) => {
     if (!user) {
@@ -471,6 +488,37 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center" suppressHydrationWarning={true}>
+    {/* Render badges at the top */}
+    <div className="flex flex-wrap gap-2">
+      {badges.map((badge) => (
+        <Badge
+          key={badge.id}
+          className="cursor-pointer text-sm px-8 rounded-2xl transition-all duration-300 ease-in-out border-2 shadow-lg text-white"
+          style={{ backgroundColor: badge.color }} // Dynamicznie przypisujemy kolor
+          onClick={() => router.push(`/tag/${badge.name}`)} // Navigate on click
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "white"; // Change background to white on hover
+            e.currentTarget.style.color = "black"; // Change text color to black on hover
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = badge.color; // Reset to original color when hover ends
+            e.currentTarget.style.color = "white"; // Reset text color to white when hover ends
+          }}
+        >
+          {badge.name}
+        </Badge>
+      ))}
+    </div>
+  
+  
+
+
+
+
+
+
+
+
       <div className="max-w-5xl flex flex-wrap items-top justify-center">
         {posts.map((post) => (
           <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>

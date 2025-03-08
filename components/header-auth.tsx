@@ -44,18 +44,21 @@ export default async function AuthButton() {
 
   return user ? (
     <div className="flex items-center gap-4">
-      <Link href={`/profile/${user.id}`} passHref>
-        <span className="text-blue-500 cursor-pointer hover:underline">
-          Hey, {username || "User"}!
-        </span>
-      </Link>
+  {/* Displaying the username */}
+  <Link href={`/profile/${user.id}`} passHref>
+    <span className="text-black cursor-pointer font-bold hover:underline">
+      Cześć, {username || "User"}!
+    </span>
+  </Link>
 
-      <form action={signOutAction}>
-        <Button type="submit" variant="outline">
-          Sign out
-        </Button>
-      </form>
-    </div>
+  {/* Form for Sign Out */}
+  <form action={signOutAction}>
+    <Button type="submit" variant="outline">
+      Sign out
+    </Button>
+  </form>
+</div>
+
   ) : (
     <div className="flex gap-2">
       <Button asChild size="sm" variant="outline">
