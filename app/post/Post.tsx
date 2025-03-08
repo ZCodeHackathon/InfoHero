@@ -13,43 +13,7 @@ import Link from "next/link";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar"; // Import ikony unlike
-
-type Comment = {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string;
-  post_id: string;
-  content: string;
-  created_at: string;
-};
-
-type Badge = {
-  id: string;
-  name: string;
-};
-
-type PostItemProps = {
-  id: string;
-  title: string;
-  user_name: string;
-  user_avatar: string;
-  image_url?: string;
-  content: string;
-  hashtags: string[];
-  likes: number;
-  unlikes: number; // Dodaj pole unlikes
-  comments: Comment[];
-  userHasLiked: boolean;
-  userHasUnliked: boolean; // Dodaj pole userHasUnliked
-  onToggleLike: () => void;
-  onToggleUnlike: () => void; // Dodaj funkcję onToggleUnlike
-  onComment: (commentContent: string) => void;
-  onDeleteComment: (commentId: string) => void;
-  currentUser: any;
-  badges: Badge[];
-  router: any;
-};
+import { PostItemProps } from "@/components/types";
 
 const PostItem: FC<PostItemProps> = ({
   id,
@@ -66,6 +30,8 @@ const PostItem: FC<PostItemProps> = ({
   userHasUnliked, // Dodaj pole userHasUnliked
   onToggleLike,
   onToggleUnlike, // Dodaj funkcję onToggleUnlike
+  onToggleCommentLike,
+  onToggleCommentUnlike,
   onComment,
   onDeleteComment,
   currentUser,
@@ -75,33 +41,53 @@ const PostItem: FC<PostItemProps> = ({
   const { theme } = useTheme();
   const [commentText, setCommentText] = useState("");
   const [expanded, setExpanded] = useState(false);
-  const [alert, setAlert] = useState<{ open: boolean, severity: 'success' | 'error', message: string }>({
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    severity: "success" | "error";
+    message: string;
+  }>({
     open: false,
-    severity: 'success',
-    message: ''
+    severity: "success",
+    message: "",
   });
   const handleLikeClick = () => {
-    onToggleLike();
+    if (onToggleLike) {
+      onToggleLike();
+    }
   };
 
   const handleUnlikeClick = () => {
-    onToggleUnlike();
+    if (onToggleUnlike) {
+      onToggleUnlike();
+    }
   };
   const handleAlertClose = () => {
-    setAlert({...alert, open: false});
+    setAlert({ ...alert, open: false });
   };
   const handleCommentSubmit = () => {
     if (commentText.trim() !== "") {
-      onComment(commentText);
-      setAlert({open: true, severity: 'success', message: 'Dodano komentarz!'});
+      if (onComment) {
+        onComment(commentText);
+      }
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Dodano komentarz!",
+      });
       setCommentText("");
     }
   };
 
   const confirmDeleteComment = (commentId: string) => {
     if (confirm("Czy na pewno chcesz usunąć komentarz?")) {
-      onDeleteComment(commentId);
-      setAlert({open: true, severity: 'success', message: 'Usunięto komentarz!'});
+      if (onDeleteComment) {
+        onDeleteComment(commentId);
+      }
+      setAlert({
+        open: true,
+        severity: "success",
+        message: "Usunięto komentarz!",
+      });
     }
   };
 
@@ -216,6 +202,37 @@ const PostItem: FC<PostItemProps> = ({
                   {new Date(comment.created_at).toLocaleString()}
                 </p>
                 <p>{comment.content}</p>
+                <div className="flex items-center mt-2">
+                  <ThumbsUp
+                    style={{
+                      color: comment.userHasLiked ? "green" : "grey",
+                      fontSize: 24,
+                    }}
+                    onClick={() =>
+                      onToggleCommentLike && onToggleCommentLike(comment.id)
+                    }
+                  />
+
+                  <ThumbsDown
+                    style={{
+                      color: comment.userHasUnliked ? "red" : "grey",
+                      fontSize: 24,
+                    }}
+                    onClick={() =>
+                      onToggleCommentUnlike && onToggleCommentUnlike(comment.id)
+                    }
+                  />
+
+                  <p className="ml-2 text-green-500">
+                    {comment.likes > 0 ? `+${comment.likes}` : comment.likes}
+                  </p>
+
+                  <p className="ml-2 text-red-500">
+                    {comment.unlikes > 0
+                      ? `-${comment.unlikes}`
+                      : comment.unlikes}
+                  </p>
+                </div>
               </div>
             </div>
             {currentUser?.id === comment.user_id && (
@@ -229,8 +246,16 @@ const PostItem: FC<PostItemProps> = ({
           </div>
         ))}
       </Collapse>
-      <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
-        <Alert onClose={handleAlertClose} severity={alert.severity} sx={{width: '100%'}}>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
           {alert.message}
         </Alert>
       </Snackbar>
