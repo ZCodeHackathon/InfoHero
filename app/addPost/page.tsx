@@ -4,8 +4,8 @@ import {createClient} from "@/utils/supabase/client";
 import {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import Select from "react-select";
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 type Badge = {
     id: string;
@@ -16,6 +16,7 @@ export default function AddPost() {
     const [content, setContent] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [hashtags, setHashtags] = useState("");
+    const [source, setSource] = useState("");
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<any>(null); // State for the user
     const [badges, setBadges] = useState<Badge[]>([]);
@@ -155,18 +156,19 @@ export default function AddPost() {
             comments: [],
             user_id: user.id,
             user_name: user.username,
-            fake_detection: isFake
+            fake_detection: isFake,
+            source: source || null
         }]).select("id").single();
 
         if (error) {
             console.error("Error adding post:", error);
             //   alert("There was an error adding your post.");
-            setAlert({open: true, severity: 'error', message: 'Error adding post!'});
+            setAlert({open: true, severity: 'error', message: 'Wystąpił błąd przy dodawaniu posta!'});
 
             return;
         }
         // alert("Post added successfully!");
-        setAlert({open: true, severity: 'success', message: 'Post added successfully!'});
+        setAlert({open: true, severity: 'success', message: 'Pomyślnie dodano post!'});
 
         const postBadges = selectedBadges.map((badge) => ({
             post_id: data.id,
@@ -178,7 +180,7 @@ export default function AddPost() {
         );
         if (pbError) {
             console.error("Error adding post badges:", error);
-            setAlert({open: true, severity: 'error', message: 'Error adding post badges!'});
+            setAlert({open: true, severity: 'error', message: 'Wystąpił błąd przy dodawaniu posta!'});
 
             //alert("There was an error adding your post.");
             return;
@@ -200,11 +202,11 @@ export default function AddPost() {
 
     return (
         <div className="bg-black p-4 rounded-md shadow-lg w-full max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold text-white mb-4">Add New Post</h1>
+            <h1 className="text-2xl font-bold text-white mb-4">Dodaj nowy post</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label htmlFor="title" className="text-white">
-                        Title
+                        Tytuł
                     </label>
                     <input
                         type="text"
@@ -218,7 +220,7 @@ export default function AddPost() {
 
                 <div className="mb-4">
                     <label htmlFor="content" className="text-white">
-                        Content
+                        Treść
                     </label>
                     <textarea
                         id="content"
@@ -231,7 +233,7 @@ export default function AddPost() {
 
                 <div className="mb-4">
                     <label htmlFor="imageUrl" className="text-white">
-                        Image URL
+                        URL obrazka
                     </label>
                     <input
                         type="url"
@@ -242,16 +244,30 @@ export default function AddPost() {
                         className="w-full mt-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md"
                     />
                 </div>
-
                 <div className="mb-4">
-                    <label htmlFor="hashtags" className="text-white">Hashtags (comma separated)</label>
+                    <label htmlFor="sourceUrl" className="text-white">
+                        Źródło
+                    </label>
+                    <input
+                        type="url"
+                        id="sourceUrl"
+                        value={source}
+                        onChange={(e) => setSource(e.target.value)}
+                        className="w-full mt-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="hashtags" className="text-white">Tagi</label>
                     <Select
                         isMulti
                         value={selectedBadges}
                         options={badgeOptions}
+                        placeholder={"Wybierz tagi"}
                         onChange={setSelectedBadges}
                         className="w-full mt-1 p-3 bg-gray-800 text-black border border-gray-600 rounded-md"
                         required
+                        maxMenuHeight={200}
+                        isOptionDisabled={() => selectedBadges.length >= 3}
                     />
                 </div>
 
@@ -261,11 +277,15 @@ export default function AddPost() {
                         disabled={loading}
                         className="w-full mt-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
                     >
-                        {loading ? "Adding..." : "Add Post"}
+                        {loading ? "Dodawanie..." : "Dodaj post"}
                     </button>
                 </div>
             </form>
-
+            <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity={alert.severity} sx={{width: '100%'}}>
+                    {alert.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }
