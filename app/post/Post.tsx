@@ -216,7 +216,7 @@ const PostItem: FC<PostItemProps> = ({
           ))}
         </Collapse>
       </div>
-    </Link>
+    
   );
 };
 
