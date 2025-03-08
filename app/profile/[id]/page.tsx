@@ -329,6 +329,7 @@ export default function ProfilePage() {
                     user_id={post.user_id}
                     user_name={post.user_name}
                     user_avatar={post.user_avatar}
+                    fake_detection={post.fake_detection}
                     title={post.title}
                     image_url={post.image_url}
                     content={post.content}

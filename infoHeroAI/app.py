@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 #import numpy as np
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModelForCausalLM
 import torch
+from flask_cors import CORS
 #from transformers import RobertaTokenizerFast, TFRobertaForSequenceClassification, pipeline
 #from huggingface_hub import login
 #import tensorflow as tf
@@ -25,7 +26,7 @@ model2 = AutoModelForSequenceClassification.from_pretrained("ArkadiusDS/polbert-
 
 
 app = Flask(__name__)
-
+CORS(app)
 
 def classify_text(text, mod, tok):
     inputs = tok(text, return_tensors="pt", truncation=True, padding=True)
