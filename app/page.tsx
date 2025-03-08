@@ -487,7 +487,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center" suppressHydrationWarning={true}>
+    <div
+      className="flex flex-col items-center w-full"
+      suppressHydrationWarning={true}
+    >
+      {/* Main Posts Content */}
     {/* Render badges at the top */}
     <div className="flex flex-wrap gap-2">
       {badges.map((badge) => (
@@ -519,7 +523,7 @@ export default function Home() {
 
 
 
-      <div className="max-w-5xl flex flex-wrap items-top justify-center">
+      <div className="flex flex-wrap items-top justify-center w-full">
         {posts.map((post) => (
           <div className="w-full sm:w-1/2 md:w-1/3 max-w-xs p-2" key={post.id}>
             <PostItem
@@ -560,6 +564,8 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {/* Keep the Snackbar */}
       <Snackbar
         open={alert.open}
         autoHideDuration={6000}

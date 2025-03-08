@@ -60,11 +60,28 @@ export default function RootLayout({
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                 </div>
               </nav>
-              <div className="flex flex-col gap-20 max-w-5xl p-5 mt-12">
-                {children}
+
+              {/* Update this section to include ad banners */}
+              <div className="w-full flex justify-center">
+                {/* Left Ad Banner */}
+                <div className="hidden xl:block w-[400px] h-[850px] sticky top-4 mt-4">
+                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">Ad Space</span>
+                  </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 max-w-5xl p-5 mt-12">{children}</div>
+
+                {/* Right Ad Banner */}
+                <div className="hidden xl:block w-[400px] h-[850px] sticky top-4 mt-4">
+                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">Ad Space</span>
+                  </div>
+                </div>
               </div>
 
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs">
                 <p>Powered by Zcode</p>
                 <ThemeSwitcher />
               </footer>

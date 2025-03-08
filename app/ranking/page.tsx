@@ -521,6 +521,8 @@ LIMIT 10;
                                             unlikes={post.unlikes}
                                             comments={post.comments}
                                             badges={post.badges}
+                                            source={post.source}
+                                            fake_detection={post.fake_detection}
                                             userHasLiked={userLikes.includes(post.id)}
                                             userHasUnliked={userUnlikes.includes(post.id)}
                                             onToggleLike={() => handleToggleLike(post.id)}
