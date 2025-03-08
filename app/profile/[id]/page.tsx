@@ -285,7 +285,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col items-center p-4">
-      <div className="w-full md:w-7/12 max-w-5xl">
+      <div className="w-full md:w-10/12  max-w-5xl">
         <div className="flex flex-col items-center">
           {/* Avatar użytkownika */}
           {profile?.avatar_url && (
@@ -301,16 +301,20 @@ export default function ProfilePage() {
         </div>
 
         {/* Navbar z przełączaniem między postami a komentarzami */}
-        <div className="mt-8 mb-4 flex space-x-4">
+        <div className="mt-8 mb-4 flex items-center gap-4">
           <button
-            className={`px-4 py-2 rounded-md ${activeTab === "posts" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-            onClick={() => setActiveTab("posts")}
+              className={`w-28 h-10 rounded-md ${
+                  activeTab === "posts" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setActiveTab("posts")}
           >
             Posty
           </button>
           <button
-            className={`px-4 py-2 rounded-md ${activeTab === "comments" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-            onClick={() => setActiveTab("comments")}
+              className={`w-28 h-10 rounded-md ${
+                  activeTab === "comments" ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setActiveTab("comments")}
           >
             Komentarze
           </button>
@@ -318,20 +322,20 @@ export default function ProfilePage() {
 
         {/* Dynamiczny widok postów lub komentarzy */}
         {activeTab === "posts" && (
-          <div>
-            <h2 className="text-xl font-semibold">Posty użytkownika</h2>
-            <div className="space-y-4">
-              {posts.length > 0 ? (
-                posts.map((post) => (
-                  <PostItem
-                    key={post.id}
-                    id={post.id}
-                    user_id={post.user_id}
-                    user_name={post.user_name}
-                    user_avatar={post.user_avatar}
-                    fake_detection={post.fake_detection}
-                    title={post.title}
-                    image_url={post.image_url}
+            <div>
+              <h2 className="text-xl font-semibold">Posty użytkownika</h2>
+              <div className="space-y-4">
+                {posts.length > 0 ? (
+                    posts.map((post) => (
+                        <PostItem
+                            key={post.id}
+                            id={post.id}
+                            user_id={post.user_id}
+                            user_name={post.user_name}
+                            user_avatar={post.user_avatar}
+                            fake_detection={post.fake_detection}
+                            title={post.title}
+                            image_url={post.image_url}
                     content={post.content}
                     hashtags={post.hashtags}
                     likes={post.likes}
@@ -363,7 +367,7 @@ export default function ProfilePage() {
                 comments.map((comment) => (
                   <div key={comment.id} className="border-t pt-2 mt-2">
                     <div className="flex items-center">
-                      <Avatar src={comment.user_avatar} />
+                      <Avatar src={profile.avatar_url} />
                       <div className="ml-2">
                         <p className="text-sm text-gray-500">
                           {comment.user_name} -{" "}

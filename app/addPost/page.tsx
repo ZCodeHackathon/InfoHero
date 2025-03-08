@@ -228,6 +228,7 @@ export default function AddPost() {
                         type="text"
                         id="title"
                         value={title}
+                        maxLength={50}
                         onChange={handleTitleChange}
                         required
                         className="w-full mt-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md"
